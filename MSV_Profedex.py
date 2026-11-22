@@ -4,6 +4,7 @@ import re
 import unicodedata
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.svm import LinearSVC
 
 # 1. Cargar palabras vacías y normalizarlas
 def normalizar_palabras_vacias(palabras_vacias):
@@ -62,9 +63,20 @@ vectorizar_comentario = CountVectorizer(tokenizer=normalizar_comentario,lowercas
 
 X = vectorizar_comentario.fit_transform([ " ".join(token) for token in resultados_normalizados ])
 
+modelo = LinearSVC()
+modelo.fit(X, [1, 0, 1, 1, 0, 0, 0, 1])  # Etiquetas de ejemplo para entrenamiento
+
+#3.1 Mostrar el vocabulario, la matriz de caracteristicas y los pesos de cada palabra en cada comentario
 vocabulario = vectorizar_comentario.get_feature_names_out()
 print("\nVocabulario:")
 print(vocabulario)
 
 print("\nMatriz de características (X):")
 print(X.toarray())
+
+print("\nPesos de cada palabra en cada comentario:")
+pesos = modelo.coef_[0]
+tabla_pesos = dict(zip(vocabulario, pesos))
+
+tabla_ordenada = dict(sorted(tabla_pesos.items(), key=lambda x: x[1], reverse=True))
+print(tabla_ordenada)
