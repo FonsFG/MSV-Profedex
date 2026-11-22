@@ -2,7 +2,8 @@
 
 import re
 import unicodedata
-
+import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer
 
 # 1. Limpieza de datos
 def normalizar_comentario(comentario):
@@ -36,3 +37,15 @@ resultados_normalizados = [normalizar_comentario(comentario) for comentario in c
 print("Comentarios normalizados:")
 for i, resultado in enumerate(resultados_normalizados):
   print(f"Comentario {i+1}: {resultado}")
+
+# 2. Vectorización de comentarios
+vectorizar_comentario = CountVectorizer(tokenizer=normalizar_comentario,lowercase=False,token_pattern=None,binary=True)
+
+X = vectorizar_comentario.fit_transform([ " ".join(token) for token in resultados_normalizados ])
+
+vocabulario = vectorizar_comentario.get_feature_names_out()
+print("\nVocabulario:")
+print(vocabulario)
+
+print("\nMatriz de características (X):")
+print(X.toarray())
