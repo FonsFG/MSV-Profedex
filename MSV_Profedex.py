@@ -5,7 +5,19 @@ import unicodedata
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 
-# 1. Limpieza de datos
+# 1. Cargar palabras vacías y normalizarlas
+def normalizar_palabras_vacias(palabras_vacias):
+  palabras_vacias = unicodedata.normalize("NFD", palabras_vacias)
+  palabras_vacias = "".join(c for c in palabras_vacias if unicodedata.category(c) != "Mn")
+  palabras_vacias = re.sub(r"[^a-zA-Z0-9\s]", "", palabras_vacias)
+  return palabras_vacias.split()
+
+with open("stopwords-es.txt", "r", encoding="utf-8") as f:
+  stopwords_es = f.read()
+
+PALABRAS_VACIAS = set(normalizar_palabras_vacias(stopwords_es))
+
+# 2. Normalización de comentarios
 def normalizar_comentario(comentario):
   comentario = comentario.lower()
   comentario_descompuesto = unicodedata.normalize("NFD",comentario)
@@ -16,13 +28,17 @@ def normalizar_comentario(comentario):
     if unicodedata.category(c) != "Mn"
   )
 
+
   comentario_normalizado = re.sub(r"[^a-zA-Z0-9\s]", "", comentario_noacentos)
 
-  token = comentario_normalizado.split()
+  pre_token = comentario_normalizado.split()
+
+  token = [palabra for palabra in pre_token if palabra not in PALABRAS_VACIAS]
 
   return token
 
-#1.2 Pequeña muestra de los comentarios normalizados
+
+#2. Pequeña muestra de los comentarios normalizados
 comentarios = [
   
   "El profe es excelente, muy claro en sus explicaciones.",
@@ -38,8 +54,8 @@ print("Comentarios normalizados:")
 for i, resultado in enumerate(resultados_normalizados):
   print(f"Comentario {i+1}: {resultado}")
 
-# 2. Vectorización de comentarios
-vectorizar_comentario = CountVectorizer(tokenizer=normalizar_comentario,lowercase=False,token_pattern=None,binary=True)
+# 3. Vectorización de comentarios
+vectorizar_comentario = CountVectorizer(tokenizer=normalizar_comentario,lowercase=False,token_pattern=None,ngram_range=(1,2),binary=True)
 
 X = vectorizar_comentario.fit_transform([ " ".join(token) for token in resultados_normalizados ])
 
