@@ -46,6 +46,9 @@ comentarios = [
   "¡Excelente profesor! Muy didáctico y claro.",
   "Siemplemente the goat, el mejor profe que he tenido.",
   "No recomiendo a este profesor, no explica bien.",
+  "no recomiendo nada al profe",
+  "no me gusta la forma en que enseña, es confuso y aburrido.",
+  "El profesor es muy bueno, pero a veces se pone un poco aburrido.",
 ]
 
 resultados_normalizados = [normalizar_comentario(comentario) for comentario in comentarios]
@@ -55,7 +58,7 @@ for i, resultado in enumerate(resultados_normalizados):
   print(f"Comentario {i+1}: {resultado}")
 
 # 3. Vectorización de comentarios
-vectorizar_comentario = CountVectorizer(tokenizer=normalizar_comentario,lowercase=False,token_pattern=None,ngram_range=(1,2),binary=True)
+vectorizar_comentario = CountVectorizer(tokenizer=normalizar_comentario,lowercase=False,token_pattern=None,ngram_range=(1,2),min_df=2,binary=True)
 
 X = vectorizar_comentario.fit_transform([ " ".join(token) for token in resultados_normalizados ])
 
