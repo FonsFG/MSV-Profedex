@@ -4,7 +4,6 @@ import comentarios_por_categoria as datos
 
 import re
 import unicodedata
-import numpy as np
 from collections import Counter
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.svm import LinearSVC
